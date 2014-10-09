@@ -10,6 +10,7 @@
 //listen으로 듣고
 //accept해서 받고
 
+//프로젝트 속성 -> 링커 -> 입력 -> 추가종속성 -> edit -> ws2_32.lib
 void errorPrint(char * message){
 	printf("%s\n", message);
 	getchar();
