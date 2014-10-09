@@ -2,7 +2,7 @@
 #include <winsock2.h>
 
 #define MAX_DATA 100
-#define ERROR 1
+#define ERROR_NUMBER 1
 #define PORT 3000
 
 //socket 만들고
@@ -13,7 +13,7 @@
 void errorPrint(char * message){
 	printf("%s\n", message);
 	getchar();
-	exit(ERROR);
+	exit(ERROR_NUMBER);
 }
 
 int main(){
@@ -49,7 +49,7 @@ int main(){
 
 	char buf[MAX_DATA];
 	int recvSize;
-	recvSize = recv(serverSock, buf, sizeof(buf), 0);
+	recvSize = recv(clientSock, buf, sizeof(buf), 0);
 	
 	if (recvSize == SOCKET_ERROR)
 		errorPrint("recv 실패");
