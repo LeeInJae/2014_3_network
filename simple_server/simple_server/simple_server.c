@@ -3,6 +3,7 @@
 
 #define MAX_DATA 100
 #define ERROR 1
+#define PORT 3000
 
 //socket 만들고
 //bind 해서 할당해주고
@@ -17,7 +18,6 @@ void errorPrint(char * message){
 
 int main(){
 	WSADATA wsaData;
-	int port = 3000;
 	
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		errorPrint("윈속라이브러리 초기화 실패");
@@ -31,7 +31,7 @@ int main(){
 	memset(&servAddr, 0, sizeof(servAddr));
 	servAddr.sin_family = AF_INET;
 	servAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servAddr.sin_port = htons(port);
+	servAddr.sin_port = htons(PORT);
 
 	if (bind(serverSock, (SOCKADDR *)&servAddr, sizeof(servAddr)) == SOCKET_ERROR)
 		errorPrint("소켓에 바인드를 하지 못함");
@@ -60,5 +60,6 @@ int main(){
 	closesocket(clientSock);
 	closesocket(serverSock);
 	WSACleanup();
+	getchar();
 	return 0;
 }
