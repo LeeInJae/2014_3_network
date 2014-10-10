@@ -13,53 +13,59 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#define ERROR_NUMBER 1
 #define PORT 3000
 #define MAX_DATA 100
 
-void errorPrint(char * message){
-    printf("%s\n",message);
-    exit(ERROR_NUMBER);
-}
-
 int main(int argc, const char * argv[])
 {
-    int serverSock = socket(PF_INET, SOCK_STREAM, 0);
-    if(serverSock == -1)
-        errorPrint("소켓 생성 실패");
-    
+    int ret = -1;
     struct sockaddr_in serverAddr;
-    memset(&serverAddr,0,sizeof(serverAddr));
+    int serverSock;
+    int acceptedSock;
+    struct sockaddr_in clientAddr;
+    char readBuf[MAX_DATA];
+    ssize_t readSize;
+    socklen_t clientAddrSize = sizeof(clientAddr);
+    
+    serverSock = socket(PF_INET, SOCK_STREAM, 0);
+    if(serverSock == -1) {
+        perror("socket");
+        goto leave;
+    }
+    
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = (INADDR_ANY);
     serverAddr.sin_port = htons(PORT);
     
-    if(bind(serverSock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
-        errorPrint("바인드 실패");
+    if((ret = bind(serverSock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)))){
+        perror("bind");
+        goto leave;
+    }
     
-    if(listen(serverSock, 10) == -1)
-        errorPrint("listen 실패");
+    if(listen(serverSock, 1) == -1){
+        perror("listen");
+        goto leave;
+    }
     
-    int clientSock;
-    struct sockaddr_in clientAddr;
-    socklen_t clientAddrSize = sizeof(clientAddr);
-    clientSock = accept(serverSock, (struct sockaddr *)&clientAddr, &clientAddrSize);
-    if(clientSock == -1)
-        errorPrint("accept 실패");
+    acceptedSock = accept(serverSock, (struct sockaddr *)&clientAddr, &clientAddrSize);
+    if(acceptedSock == -1){
+        perror("accept");
+        goto leave;
+    }
     
-    char readBuf[MAX_DATA];
-    memset(readBuf,0,sizeof(readBuf));
-    ssize_t readSize;
-    readSize = read(clientSock, readBuf, sizeof(readBuf));
-    if(readSize == -1)
-        errorPrint("read실패");
+    readSize = read(acceptedSock, readBuf, MAX_DATA);
+    if(readSize == -1){
+        perror("read");
+        goto leave;
+    }
     
     printf("읽은 바이트 수 %ld\n", readSize);
     printf("%s\n", readBuf);
     
-    close(clientSock);
+    close(acceptedSock);
     close(serverSock);
-    
+
     getchar();
-    return 0;
+leave:
+    return ret;
 }
