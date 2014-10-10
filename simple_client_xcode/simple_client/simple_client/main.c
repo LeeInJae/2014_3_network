@@ -44,8 +44,9 @@ int main(int argc, const char * argv[])
     
     strcpy(writeBuf, WRITE_DATA);
     writeSize = write(clientSock, writeBuf, sizeof(WRITE_DATA));
-    if(writeSize == -1){
+    if(writeSize <= 0){    // Error or connection closed
         perror("write");
+        ret = -1;           // ret is 0 if connect() was succeccful
         goto leave;
     }
     
