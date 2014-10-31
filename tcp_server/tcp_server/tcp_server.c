@@ -51,6 +51,7 @@ int main(int argc, char * argv[]){
 		}
 		++recvCount;
 	}
+
 	printf("%s\n", recvBuf);
 	printf("recv count = %d\n", recvCount);
 	closesocket(serverSocket);
