@@ -42,7 +42,7 @@ int main(int argc, const char * argv[])
         goto leave;
     }
     
-    if(listen(serverSock, 1) == -1){
+    if((ret = listen(serverSock, 1))){
         perror("listen");
         goto leave;
     }
@@ -50,12 +50,14 @@ int main(int argc, const char * argv[])
     acceptedSock = accept(serverSock, (struct sockaddr *)&clientAddr, &clientAddrSize);
     if(acceptedSock == -1){
         perror("accept");
+        ret = -1;
         goto leave;
     }
     
     readSize = read(acceptedSock, readBuf, MAX_DATA);
-    if(readSize == -1){
+    if(readSize <= 0){
         perror("read");
+        ret = -1;
         goto leave;
     }
     
